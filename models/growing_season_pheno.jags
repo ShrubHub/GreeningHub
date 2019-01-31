@@ -1,0 +1,71 @@
+
+      model{
+      
+      #PRIORS P2
+      aP2~dunif(0,365)
+      bP2~dnorm(0,0.001)
+      #Priors for plot random effect
+      for (i in 1:nplotP2){
+      aplotP2[i]~dnorm(0,tau.plotP2)
+      }
+      sigma.plotP2~dunif(0,100)
+      tau.plotP2 <- 1/(sigma.plotP2*sigma.plotP2)
+      sigmaP2~dunif(0,100)
+      tauP2 <- 1/(sigmaP2*sigmaP2)
+      sigma.yearP2~dunif(0,100)
+      tau.yearP2 <- 1/(sigma.yearP2*sigma.yearP2)
+      
+      #PRIORS P5
+      aP5~dunif(0,365)
+      bP5~dnorm(0,0.001)
+      #Priors for plot random effect
+      for (i in 1:nplotP5){
+      aplotP5[i]~dnorm(0,tau.plotP5)
+      }
+      sigma.plotP5~dunif(0,100)
+      tau.plotP5 <- 1/(sigma.plotP5*sigma.plotP5)
+      sigmaP5~dunif(0,100)
+      tauP5 <- 1/(sigmaP5*sigmaP5)
+      sigma.yearP5~dunif(0,100)
+      tau.yearP5 <- 1/(sigma.yearP5*sigma.yearP5)
+      
+      #LIKELIHOOD P2
+      for (k in 1:nyearP2){
+      #this adds in the random variation
+      a.yearP2[k]~dnorm(muyearP2[k], tau.yearP2)
+      #this is the predicted mean effect per year
+      muyearP2[k] <- aP2+bP2*k
+      }
+      for (i in 1:nP2){
+      y1sP2[i]~dinterval(tP2[i],limP2[i,])
+      #y1s is a column of 1's (because t[i] always falls between lim[i,1] and lim[i,2])
+      tP2[i]~dnorm(predP2[i],tauP2)
+      predP2[i] <- aplotP2[plotP2[i]]+a.yearP2[yearP2[i]]
+      }
+      
+      #LIKELIHOOD P5
+      for (k in 1:nyearP5){
+      #this adds in the random variation
+      a.yearP5[k]~dnorm(muyearP5[k], tau.yearP5)
+      #this is the predicted mean effect per year
+      muyearP5[k] <- aP5+bP5*k
+      }
+      for (i in 1:nP5){
+      y1sP5[i]~dinterval(tP5[i],limP5[i,])
+      #y1s is a column of 1's (because t[i] always falls between lim[i,1] and lim[i,2])
+      tP5[i]~dnorm(predP5[i],tauP5)
+      predP5[i] <- aplotP5[plotP5[i]]+a.yearP5[yearP5[i]]
+      }
+      # DERIVED QUANTITIES
+      for (j in 1:nxhatP2){
+      yhatP2[j] <- aP2+bP2*xhatP2[j]
+      }
+      for (j in 1:nxhatP5){
+      yhatP5[j] <- aP5+bP5*xhatP5[j]
+      }
+      slopeDiff <- bP5-bP2
+      for (j in 1:nxhatP5){
+      yhatDiff[j] <- yhatP5[j]-yhatP2[j+1] #add 1 to yhatP2 because it starts one year earlier
+      }
+      }
+      

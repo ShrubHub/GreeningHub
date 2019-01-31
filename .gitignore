@@ -1,9 +1,65 @@
+#packrat
+packrat/src/
+
+# prevent users to commit their own RProject
+.Rproj
+.Rproj.user
+GreeningHub.Rproj
+
+# prevent users to commit their own .RData and .Rhistory in mutual area
+.RData
+.Rhistory
+.Rapp.history
+workspace/.RData
+workspace/.Rhistory
+
+# prevent users to commit to heavy files
+*.zip
+*.tif
+*.shp
+
+# temporary files
+*~
+
+# Word temporary
+~$*.doc*
+
+# Excel temporary
+~$*.xls*
+
+# Excel Backup File
+*.xlk
+
+# PowerPoint temporary
+~$*.ppt*
+
+## hide the workspace creation procedure
+scripts/create_workspace/*
+
+## prevent mac users to commit .DS_Store files
+*.DS_Store
+
+## prevent to commit the README.. files created by RStudio
+#*README_files/
+*README.html
+*README_cache/
+
+# get rid of icon files
+*.Icon\r\r
+
+## prevent to commit Thumbs.db files
+Thumbs.db
+
+# index.lock files
+index.lock
+.httr-oauth
+
+# Ignore Rplots.pdf files
+Rplots.pdf
+
 # History files
 .Rhistory
 .Rapp.history
-
-# Session Data files
-.RData
 
 # Example code in package build process
 *-Ex.R
@@ -13,9 +69,6 @@
 
 # Output files from R CMD check
 /*.Rcheck/
-
-# RStudio files
-.Rproj.user/
 
 # produced vignettes
 vignettes/*.html
@@ -34,3 +87,4 @@ vignettes/*.pdf
 
 # Shiny token, see https://shiny.rstudio.com/articles/shinyapps.html
 rsconnect/
+packrat/lib*/

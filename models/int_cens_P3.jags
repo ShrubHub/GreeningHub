@@ -1,0 +1,39 @@
+
+      model{
+      # PRIORS
+      for (i in 1:nspp){
+      aspp[i] ~ dunif(0, 365)
+      bspp[i] ~ dnorm(0, 0.001)
+      }
+      for (i in 1:nplot){
+      aplot[i] ~ dnorm(0, tau.plot)
+      }
+      sigma.plot ~ dunif(0, 100)
+      tau.plot <- 1/(sigma.plot*sigma.plot)
+      sigma.year ~ dunif(0, 100)
+      tau.year <- 1/(sigma.year*sigma.year)
+      sigma ~ dunif(0, 100)
+      tau <- 1/(sigma*sigma)
+      #LIKELIHOOD
+      for (j in 1:nspp){
+      for (k in 1:nyear){
+      a.sppyear[j,k]~dnorm(musppyear[j,k], tau.year)
+      musppyear[j,k] <- aspp[j]+bspp[j]*k
+      }
+      }
+      for (i in 1:n){
+      y1s[i]~dinterval(t[i],lim[i,])
+      t[i]~dnorm(pred[i],tau)
+      pred[i] <- aplot[plot[i]]+a.sppyear[species[i],year[i]]
+      }
+      # DERIVED QUANTITIES
+      for (i in 1:nspp){
+      for (j in 1:nxhat){
+      phat[i,j] <- aspp[i] + bspp[i]*xhat[i,j]
+      }
+      }
+      diff1to2 <- aspp[1] - aspp[2]
+      diff1to3 <- aspp[1] - aspp[3]
+      diff2to3 <- aspp[2] - aspp[3]
+      }
+      

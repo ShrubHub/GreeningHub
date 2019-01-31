@@ -1,0 +1,140 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1348\cocoasubrtf170
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+
+\f0\fs24 \cf0 // Complexity revealed in the greening of the Arctic\
+// January 2019\
+\
+// Arctic greening patterns - MODIS max NDVI robust regerssion trends\
+\
+var qikiqtaruk = ee.Geometry.Point([-139.92, 69.58]);\
+Map.addLayer(qikiqtaruk);\
+\
+// Arctic polygon\
+var arctic_plane = ee.Geometry.Polygon(\{\
+  coords: [[-180, 54],[180, 54],[180, 80],[-180, 80]],\
+  geodesic: false\
+\});\
+Map.addLayer(arctic_plane);\
+\
+// Load MODIS data\
+var modis = ee.ImageCollection("MODIS/006/MOD13A1");\
+\
+// Set duration of interest\
+var start = ee.Date('2000-01-01');\
+var end = ee.Date('2015-12-31');\
+\
+// Create sequence of years for mapping\
+var years = ee.List.sequence(start.get('year'), end.get('year'));\
+\
+// Define function to mask pixels with high SummaryQA\
+var maskSummaryQA = function(image) \{\
+  return image.updateMask(image.select("SummaryQA").lt(1));\
+\};\
+\
+// Apply to image collection\
+var modisMaskedQA = modis.map(maskSummaryQA);\
+\
+// Create water mask.  Water = 1, land = 0\
+var waterMask = ee.ImageCollection('MODIS/006/MOD44W')\
+              .filter(ee.Filter.date('2015-01-01', '2015-01-02'))\
+              .select('water_mask')\
+              .first();\
+\
+// Definte function to mask out water\
+var maskWater = function(image)\{\
+  return image.updateMask(waterMask.select('water_mask').lt(3));\
+\};\
+\
+// Apply to image collection\
+var modisMasked = modisMaskedQA.map(maskWater);\
+\
+// Composite by max NDVI for years in list\
+var modisAnnual = ee.ImageCollection.fromImages(\
+      years.map(function (y) \{\
+        return modisMasked\
+        .filter(ee.Filter.calendarRange(y, y, 'year'))\
+        .filter(ee.Filter.calendarRange(7, 8, 'month'))\
+                    .select('NDVI')\
+                    .max()\
+                    .set('year', y)\
+                    .set('system:time_start', \
+                      ee.Date(ee.Number(y).format('%d').cat('-01-01')\
+                      ));\
+\}));\
+\
+// Prepare images for regressions analysis\
+// Adding extra bands for coefficients (intercept, timestep)\
+var modisYear = modisAnnual\
+  .map(function(image) \{\
+    var date = ee.Date(image.get('system:time_start'));\
+    var yearOffset = date.difference(start, 'year');\
+    return ee.Image(yearOffset)\
+    .float()\
+    .addBands(image)\
+    .set('system:time_start', \
+      ee.Date(ee.Number(image.get('year')).format('%d').cat('-07-01')));\
+  \});\
+\
+// Calculate slopes using the sensSlope function - This is calculates Theil-Sen\
+var regression = modisYear.reduce(ee.Reducer.sensSlope());\
+\
+// Map the coefficients\
+Map.centerObject(ee.Feature(qikiqtaruk), 9);\
+\
+// Determine min, max and mean slopes in region (100 km raidus)\
+var min_slope_NDVI = regression.select('slope')\
+  .reduceRegion(\
+    ee.Reducer.min(),\
+    qikiqtaruk.buffer(100000),\
+    500);\
+    \
+var max_slope_NDVI = regression.select('slope')\
+  .reduceRegion(\
+    ee.Reducer.max(),\
+    qikiqtaruk.buffer(100000),\
+    500);\
+    \
+var mean_slope_NDVI = regression.select('slope')\
+  .reduceRegion(\
+    ee.Reducer.mean(),\
+    qikiqtaruk.buffer(100000),\
+    500);\
+    \
+// Print values\
+print('Regional slope min:', min_slope_NDVI);\
+print('Regional slope max:', max_slope_NDVI);\
+print('Regional slope mean:', mean_slope_NDVI);\
+\
+// Add Layer to map\
+Map.addLayer(\
+  regression, \
+  \{bands: 'slope', \
+   min: -150, \
+   max: 150, \
+   palette: ['513500', 'FFFFFF', '4a8900']\}, \
+  'slope');\
+\
+// Extract coefficients for Qikiqtaruk\
+print('Theil-Sen estimates for Qikiqtaruk:', regression.reduceRegion(\{\
+  reducer: ee.Reducer.first(),\
+  geometry: qikiqtaruk,\
+  scale: 10\
+\}));\
+\
+// Chart NDVI time-series for Qikiqtaruk for quality control\
+print(ui.Chart.image.series(\
+  modisYear.select(['NDVI']), \
+  qikiqtaruk, \
+  ee.Reducer.first(), \
+  500));\
+  \
+// Export to Drive\
+Export.image.toDrive(\{\
+  image: regression.select(['slope']),\
+  description: 'MODIS_NDVI_slopes',\
+  region: arctic_plane,\
+  scale: 5000, // adjust for desired resolution\
+\});}

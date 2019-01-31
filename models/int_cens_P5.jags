@@ -1,0 +1,30 @@
+
+      model{
+      # PRIORS
+      a ~ dunif(0, 365)
+      b ~ dnorm(0, 0.001)
+      for (i in 1:nplot){
+      aplot[i] ~ dnorm(0, tau.plot)
+      }
+      sigma.plot ~ dunif(0, 100)
+      tau.plot <- 1/(sigma.plot*sigma.plot)
+      sigma.year ~ dunif(0, 100)
+      tau.year <- 1/(sigma.year*sigma.year)
+      sigma ~ dunif(0, 100)
+      tau <- 1/(sigma*sigma)
+      #LIKELIHOOD
+      for (j in 1:nyear){
+      a.year[j]~dnorm(muyear[j], tau.year)
+      muyear[j] <- a+b*j
+      }
+      for (i in 1:n){
+      y1s[i]~dinterval(t[i],lim[i,])
+      t[i]~dnorm(pred[i],tau)
+      pred[i] <- aplot[plot[i]]+a.year[year[i]]
+      }
+      # DERIVED QUANTITIES
+      for (j in 1:nxhat){
+      phat[j] <- a + b*xhat[j]
+      }
+      }
+      

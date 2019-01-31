@@ -1,0 +1,103 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1348\cocoasubrtf170
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural
+
+\f0\fs24 \cf0 // Complexity revealed in the greening of the Arctic\
+// January 2019\
+\
+// Extra NDVI for vegetation types in peak season 2017\
+\
+// Define the geometry of vegetation type plots\
+var vegTypes = ee.FeatureCollection([\
+  ee.Feature(\
+  ee.Geometry.Polygon([[-138.896654834999990,69.571752914200005],\
+[-138.896628357999990,69.572021638500004],\
+[-138.895813820000000,69.572011843699997],\
+[-138.895840306999990,69.571743119600001],\
+[-138.896654834999990,69.571752914200005]]), \{label: 'shrub'\}),\
+  ee.Feature(\
+  ee.Geometry.Polygon([[-138.921399181999990,69.590050535299994],\
+[-138.921372991000000,69.590319263200001],\
+[-138.920557742000000,69.590309582499998],\
+[-138.920583943000000,69.590040854700007],\
+[-138.921399181999990,69.590050535299994]]), \{label: 'herschel'\}),\
+  ee.Feature(\
+  ee.Geometry.Polygon([[-138.899844292000010,69.585844718000004],\
+[-138.899817834999990,69.586113442400006],\
+[-138.899002757999990,69.586103661500005],\
+[-138.899029224000000,69.585834937300007],\
+[-138.899844292000010,69.585844718000004]]), \{label: 'komakuk'\})\
+  ]);\
+\
+// Load Landsat data\
+var landsat = ee.ImageCollection('LANDSAT/LE07/C01/T1_8DAY_NDVI')\
+ .filterDate('2017-07-10', '2017-08-05')\
+ .getRegion(vegTypes, 30);\
+  print(landsat, 'landsat');\
+\
+// Extract relevant bands\
+var fc = ee.FeatureCollection(landsat.map(function(list_input) \{\
+    var list = ee.List(list_input);\
+    var dict = \{\
+        col1: list.get(0),\
+        col2: list.get(1),\
+        col3: list.get(2),\
+        col4: list.get(3),\
+        col5: list.get(4)\
+    \};\
+    return ee.Feature(null, dict);\
+\}));\
+print(fc);\
+\
+// Print data\
+Export.table.toDrive(\{collection: fc, description: 'Landsat_vegTypes'\});\
+\
+// Load MODIS data\
+var modis = ee.ImageCollection('MODIS/006/MYD13A1')\
+ .select('NDVI')\
+ .filterDate('2017-07-10', '2017-08-05')\
+ .getRegion(vegTypes, 30);\
+ print(modis, 'modis');\
+\
+// Extract relevant bands\
+var fc2 = ee.FeatureCollection(modis.map(function(list_input) \{\
+    var list = ee.List(list_input);\
+    var dict = \{\
+        col1: list.get(0),\
+        col2: list.get(1),\
+        col3: list.get(2),\
+        col4: list.get(3),\
+        col5: list.get(4)\
+    \};\
+    return ee.Feature(null, dict);\
+\}));\
+print(fc2);\
+\
+// Print data\
+Export.table.toDrive(\{collection: fc2, description: 'MODIS_vegTypes'\});\
+ \
+// Load Sentinel data\
+var sentinel = ee.ImageCollection('COPERNICUS/S2')\
+ .filterDate('2017-07-10', '2017-08-05')\
+ .getRegion(vegTypes, 30);\
+  print(sentinel, 'sentinel');\
+\
+// Extract relevant bands\
+var sentinelfc = ee.FeatureCollection(sentinel.map(function(list_input) \{\
+    var list = ee.List(list_input);\
+    var dict = \{\
+        id: list.get(0),\
+        longitude: list.get(1),\
+        latitude: list.get(2),\
+        time: list.get(3),\
+        B4: list.get(7),\
+        B8: list.get(11),\
+    \};\
+    return ee.Feature(null, dict);\
+\}));\
+print('sentinelfc:', sentinelfc);\
+\
+// Print data\
+Export.table.toDrive(\{collection: sentinelfc, description: 'Sentinel_vegTypes'\});}
