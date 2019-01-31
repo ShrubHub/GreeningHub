@@ -1,5 +1,6 @@
 #packrat
 packrat/src/
+packrat/lib*/
 
 # prevent users to commit their own RProject
 .Rproj
@@ -87,4 +88,3 @@ vignettes/*.pdf
 
 # Shiny token, see https://shiny.rstudio.com/articles/shinyapps.html
 rsconnect/
-packrat/lib*/
