@@ -1,5 +1,4 @@
 #packrat
-packrat/src/
 packrat/lib*/
 
 # prevent users to commit their own RProject

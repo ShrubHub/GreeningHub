@@ -2,7 +2,7 @@
 # January 2019
 # Isla Myers-Smith
 
-packrat::init()
+#packrat::init()
 
 # Packages ----
 library(dplyr)
@@ -167,18 +167,37 @@ QHI_mean_cover <- QHI_shrub_cover %>% group_by(year) %>%
              cover_SE = sd(cover)/(sqrt(length(cover))))
 
 QHI_shrub_abund <- read.csv("data/qhi_point_fraiming_ITEX_1999-2017.csv")
-QHI_shrub_abund <- QHI_shrub_abund %>% filter(SPP == "SALPUL" | SPP == "Salix pulchra") %>% group_by(YEAR, PLOT) %>% summarise(abund = sum(Abundance)) %>% group_by(YEAR) %>% summarise(abund_mean = mean(abund), abund_SE = sd(abund)/(sqrt(length(abund))))
+QHI_shrub_abund <- QHI_shrub_abund %>% filter(SPP == "SALPUL" | SPP == "Salix pulchra") %>% group_by(YEAR, PLOT, SPP) %>% summarise(abund = sum(Abundance)) %>% group_by(YEAR, SPP) %>% summarise(abund_mean = mean(abund), abund_SE = sd(abund)/(sqrt(length(abund))))
+QHI_shrub_abund$SPP[QHI_shrub_abund$SPP == "SALPUL"] <- "Salix pulchra"
 
 # Plot
 QHI_shrub_abund <- ggplot(QHI_shrub_abund) + 
-   geom_point(aes(x = YEAR, y = abund_mean), colour = "#41A002", alpha = 0.5, size = 3) +
-   geom_errorbar(aes(x = YEAR, ymin = abund_mean - abund_SE, ymax= abund_mean + abund_SE), colour = "#41A002", alpha = 0.3) +
-   geom_smooth(method = glm, aes(x = YEAR, y = abund_mean), colour = "#41A002", fill = "#41A002", alpha = 0.3, show.legend=F, linetype = "dotted") +
+   geom_point(aes(x = YEAR, y = abund_mean, colour = SPP), alpha = 0.5, size = 3) +
+   geom_errorbar(aes(x = YEAR, ymin = abund_mean - abund_SE, ymax= abund_mean + abund_SE, colour = SPP), alpha = 0.5) +
+   geom_smooth(method = glm, aes(x = YEAR, y = abund_mean), colour = "#41A002", fill = "#41A002", alpha = 0.5, show.legend=F, linetype = "dotted") +
    ylab("Shrub abundance\n") +
    xlab("") +
    scale_y_continuous(breaks = c(0, 20, 40, 60, 80, 100), limits = c(0, 100)) +
    scale_x_continuous(breaks = c(2000, 2005, 2010, 2015), limits = c(1998, 2017)) +
-   theme_QHI()
+  scale_colour_manual(values = c("#41A002"), labels = c("S. pulchra")) +
+  #scale_fill_manual(values = c("#41A002"), labels = c("S. pulchra")) +
+  theme_bw() +
+  theme(axis.text = element_text(size = 16), 
+        axis.title = element_text(size = 20),
+        axis.text.x = element_text(angle = -45, hjust = -0.05),
+        axis.line.x = element_line(color="black"), axis.line.y = element_line(color="black"),
+        panel.border = element_blank(),
+        panel.grid.major.x = element_blank(),                                          
+        panel.grid.minor.x = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        panel.grid.major.y = element_blank(),  
+        plot.margin = unit(c(1, 1, 1, 1), units = , "cm"),
+        plot.title = element_text(size=20, vjust=1, hjust=0),
+        legend.text = element_text(size=14, face="italic"),          
+        legend.title = element_blank(),                              
+        legend.position = c(0.75, 0.12), 
+        legend.key = element_blank(),
+        legend.background = element_rect(color = "black", fill = "transparent", size = 4, linetype="blank"))
 
 ggsave("plots/QHI_shrub_abund.png", plot = QHI_shrub_abund, width = 4, height = 4, units = "in", dpi = 300)
 
@@ -196,8 +215,8 @@ kanger_shrub_abund <- read.csv("data/kanger_abundance.csv")
 # Plot
 kanger_abund <- ggplot(kanger_shrub_abund, group = Species) + 
    geom_point(aes(x=Year, y=abund_mean, colour = Species), alpha = 0.5, size = 3) +
-   geom_errorbar(aes(x=Year, ymin = abund_mean - abund_SE, ymax= abund_mean + abund_SE, colour = Species), alpha = 0.3) +
-   geom_smooth(method=loess, aes(x=Year, y=abund_mean, colour = Species, fill = Species), alpha = 0.3, show.legend=F, linetype = "dotted") +
+   geom_errorbar(aes(x=Year, ymin = abund_mean - abund_SE, ymax= abund_mean + abund_SE, colour = Species), alpha = 0.5) +
+   geom_smooth(method=loess, aes(x=Year, y=abund_mean, colour = Species, fill = Species), alpha = 0.5, show.legend=F, linetype = "dotted") +
    ylab("Shrub abundance\n") +
    xlab("") +
    scale_y_continuous(breaks = c(0, 20, 40, 60), limits = c(0, 60)) +
@@ -283,7 +302,7 @@ QHI_dendro <- QHI_shrub %>% filter(Year > 1998) %>% group_by(Year, Sp) %>%
   summarise(mean_rw = mean(rw), rw_SD = sd(rw), rw_SE = (sd(rw)/sqrt(length(unique(IndivUN)))))
 
 QHI_dendro_plot <- ggplot(QHI_dendro, group = Sp) + 
-  geom_errorbar(aes(x=Year, ymin = mean_rw-rw_SE, ymax=mean_rw+rw_SE, colour = Sp), alpha = 0.3) +
+  geom_errorbar(aes(x=Year, ymin = mean_rw-rw_SE, ymax=mean_rw+rw_SE, colour = Sp), alpha = 0.5) +
   geom_path(aes(x=Year, y=mean_rw, colour = Sp), size = 1) +
   geom_point(aes(x=Year, y=mean_rw, colour = Sp), alpha = 0.5, size = 3) +
   ylab("Shrub ring width (mm)\n") +
@@ -391,7 +410,7 @@ kanger_dendro <- kanger_dendro %>% filter(year > 1998) %>% group_by(year, Specie
    summarise(mean_rw = mean(ring.width_mm), rw_SD = sd(ring.width_mm), rw_SE = (sd(ring.width_mm)/sqrt(length(unique(disc)))))
 
 kanger_dendro_plot <- ggplot(kanger_dendro, group = Species) + 
-   geom_errorbar(aes(x=year, ymin = mean_rw-rw_SE, ymax=mean_rw+rw_SE, colour = Species), alpha = 0.3) +
+   geom_errorbar(aes(x=year, ymin = mean_rw-rw_SE, ymax=mean_rw+rw_SE, colour = Species), alpha = 0.5) +
    geom_path(aes(x=year, y=mean_rw, colour = Species), size = 1) +
    geom_point(aes(x=year, y=mean_rw, colour = Species), alpha = 0.5, size = 3) +
    #geom_smooth(method=lm, aes(x=year, y=mean_rw, colour = Species, fill = Species), alpha = 0.5, show.legend=F, linetype = "dotted") +

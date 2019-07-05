@@ -84,7 +84,7 @@ mean <- ggplot(data_mean_2017) +
   xlab("") +
   scale_colour_manual(values = c("#4286f4", "#e8a600", "#007052")) +
   scale_fill_manual(values = c("#4286f4", "#e8a600", "#007052")) +
-  scale_size_manual(values = c(2, 4, 6, 8)) +
+  scale_size_manual(values = c(3, 6, 9, 14)) +
   ylim(0,1) +
   annotate("text", x = 0.6, y = 1, label = "A. Peak growing season NDVI", size=5, hjust=0) +
   theme_bw() +
@@ -93,7 +93,7 @@ mean <- ggplot(data_mean_2017) +
         panel.grid.minor = element_blank(),
         axis.line = element_line(colour = "black"),
         axis.title = element_text(size = 14),
-        axis.text.x = element_text(angle = 90, vjust = 0.5, size = 12, colour = "black"),
+        axis.text.x = element_text(angle = 45, vjust = 0.5, size = 12, colour = "black"),
         axis.text.y = element_text(size = 12, colour = "black"))
 
-ggsave("plots/NDVI_vegType.png", plot = mean, width = 7, height = 4.5, units = "in", dpi = 300)
+ggsave("plots/NDVI_vegType.png", plot = mean, width = 8, height = 4, units = "in", dpi = 300)
