@@ -42,6 +42,7 @@ plot <- ggplot(bands) +
          panel.grid.major.y = element_blank(),  
          plot.margin = unit(c(1, 1, 1, 1), units = , "cm"),
          plot.title = element_text(size=16, vjust=1, hjust=0),
+         axis.ticks.length=unit(.25, "cm"),
          legend.text = element_text(size=14),          
          legend.title = element_blank(),                              
          legend.key = element_blank(),

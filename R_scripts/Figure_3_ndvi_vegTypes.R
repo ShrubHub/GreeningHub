@@ -44,7 +44,8 @@ all <- ggplot(data) +
         axis.line = element_line(colour = "black"),
         axis.title = element_text(size = 14),
         axis.text.x = element_text(angle = 90, vjust = 0.5, size = 12, colour = "black"),
-        axis.text.y = element_text(size = 12, colour = "black"))
+        axis.text.y = element_text(size = 12, colour = "black"),
+        axis.ticks.length=unit(.25, "cm"))
 
 all <- all + geom_label_repel(
   aes(datayear, NDVI, label = date), size = 2,
@@ -66,7 +67,8 @@ drone <- ggplot(drone_data) +
         axis.line = element_line(colour = "black"),
         axis.title = element_text(size = 14),
         axis.text.x = element_text(angle = 90, vjust = 0.5, size = 12, colour = "black"),
-        axis.text.y = element_text(size = 12, colour = "black"))
+        axis.text.y = element_text(size = 12, colour = "black"),
+        axis.ticks.length=unit(.25, "cm"))
 
 plot <- grid.arrange(all, drone, ncol = 2, widths=c(8,4))
 
@@ -86,7 +88,7 @@ mean <- ggplot(data_mean_2017) +
   scale_fill_manual(values = c("#4286f4", "#e8a600", "#007052")) +
   scale_size_manual(values = c(3, 6, 9, 14)) +
   ylim(0,1) +
-  annotate("text", x = 0.6, y = 1, label = "A. Peak growing season NDVI", size=5, hjust=0) +
+  #annotate("text", x = 0.6, y = 1, label = "A. Peak growing season NDVI", size=5, hjust=0) +
   theme_bw() +
   theme(panel.border = element_blank(),
         panel.grid.major = element_blank(),
@@ -94,6 +96,7 @@ mean <- ggplot(data_mean_2017) +
         axis.line = element_line(colour = "black"),
         axis.title = element_text(size = 14),
         axis.text.x = element_text(angle = 45, vjust = 0.5, size = 12, colour = "black"),
-        axis.text.y = element_text(size = 12, colour = "black"))
+        axis.text.y = element_text(size = 12, colour = "black"),
+        axis.ticks.length=unit(.25, "cm"))
 
-ggsave("plots/NDVI_vegType.png", plot = mean, width = 8, height = 4, units = "in", dpi = 300)
+ggsave("plots/NDVI_vegType.png", plot = mean, width = 5, height = 4, units = "in", dpi = 300)
