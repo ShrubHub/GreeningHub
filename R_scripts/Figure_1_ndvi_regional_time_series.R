@@ -37,6 +37,7 @@ modis.plot <- ggplot(modis) +
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         axis.line = element_line(colour = "black"),
+        axis.ticks.length=unit(.25, "cm"),
         axis.title = element_text(size = 14),
         axis.text.x = element_text(angle = 90, vjust = 0.5, size = 12, colour = "black"),
         axis.text.y = element_text(size = 12, colour = "black"))
@@ -57,6 +58,7 @@ gimms.plot <- ggplot(gimms) +
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         axis.line = element_line(colour = "black"),
+        axis.ticks.length=unit(.25, "cm"),
         axis.title = element_text(size = 14),
         axis.text.x = element_text(angle = 90, vjust = 0.5, size = 12, colour = "black"),
         axis.text.y = element_text(size = 12, colour = "black"))

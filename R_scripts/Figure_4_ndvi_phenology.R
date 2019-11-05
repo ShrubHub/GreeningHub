@@ -29,6 +29,7 @@ theme_QHI <- function(){
           panel.grid.major.y = element_blank(),  
           plot.margin = unit(c(1, 1, 1, 1), units = , "cm"),
           plot.title = element_text(size=20, vjust=1, hjust=0),
+          axis.ticks.length=unit(.25, "cm"),
           legend.text = element_text(size=16, face="italic"),          
           legend.title = element_blank(),                              
           legend.position = c(0.9, 0.9), 
@@ -546,6 +547,7 @@ phenology_plot <- ggplot() +
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         axis.line = element_line(colour = "black"),
+        axis.ticks.length=unit(.25, "cm"),
         axis.title = element_text(size = 16),
         axis.text.x = element_text(angle = 90, vjust = 0.5, size = 14, colour = "black"),
         axis.text.y = element_text(size = 14, colour = "black"))
@@ -585,6 +587,7 @@ phenex_plot <- ggplot(greenup.GSL) +
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         axis.line = element_line(colour = "black"),
+        axis.ticks.length=unit(.25, "cm"),
         axis.title = element_text(size = 16),
         axis.text.x = element_text(angle = 90, vjust = 0.5, size = 14, colour = "black"),
         axis.text.y = element_text(size = 14, colour = "black"))
@@ -625,6 +628,7 @@ phenex_plot2 <- ggplot(MODIS3) +
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         axis.line = element_line(colour = "black"),
+        axis.ticks.length=unit(.25, "cm"),
         axis.title = element_text(size = 14),
         axis.text.x = element_text(angle = 90, vjust = 0.5, size = 12, colour = "black"),
         axis.text.y = element_text(size = 12, colour = "black"),
